@@ -29,7 +29,6 @@ for ($hr=$start_hour; $hr <=$end_hour; $hr=$hr+$incre_hour) {
     system("test -d $mywork || mkdir -p $mywork");
     chdir($mywork);
     #cp aux
-    $file_name2_nc3=&tool_date12_to_outfilename("auxhist3_d0${dom}_", "${d}00", ".nc");
     $file_temp_save="$TEMPDIR/$file_name2_nc3";
     $file_name1=&tool_date12_to_outfilename("auxhist3_d0${dom}_", "${d}00", "");
     $file_path1="$RUNDIR/$CYCLE/WRF_P/$file_name1";
@@ -43,9 +42,10 @@ for ($hr=$start_hour; $hr <=$end_hour; $hr=$hr+$incre_hour) {
     }elsif (-e $file_temp_save) { 
         system("cp -r $file_temp_save $mywork/");
     }elsif (-e $file_path1) {
-        system("cp -r $file_path1 $mywork/");
+        system("cp -r $file_path1 $mywork/$file_name1");
     }elsif (-e $file_path2) {
         system("cp $file_path2 $mywork/");
+        $file_name2_nc3=&tool_date12_to_outfilename("auxhist3_d0${dom}_", "${d}00", ".nc");
         $file_name2_unpack=&tool_date12_to_outfilename("auxhist3_d0${dom}_", "${d}", ".nc4");
         print("doing ncpdq unpacking..\n");
         system("ncpdq -O -U $file_name2 $file_name2_unpack && rm -rf $file_name2");
