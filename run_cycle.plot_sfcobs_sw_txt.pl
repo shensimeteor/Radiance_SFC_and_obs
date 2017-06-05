@@ -43,7 +43,7 @@ for ($hr=$start_hour; $hr <=$end_hour; $hr=$hr+$incre_hour) {
     }elsif (-e $file_temp_save) { 
         system("cp -r $file_temp_save $mywork/");
     }elsif (-e $file_path1) {
-        system("cp -r $file_path1 $mywork/");
+        system("cp -r $file_path1 $mywork/$file_name2_nc3");
     }elsif (-e $file_path2) {
         system("cp $file_path2 $mywork/");
         $file_name2_unpack=&tool_date12_to_outfilename("auxhist3_d0${dom}_", "${d}", ".nc4");
