@@ -2,7 +2,7 @@
 
 $GMID="GECN3KM";
 $MEMBER="GFS_WCTRL";
-$CYCLE="2017060412";
+$CYCLE="2017050100";
 $start_hour=0;
 $end_hour=72;
 $incre_hour=1;
@@ -13,22 +13,24 @@ $GMODDIR="$HOMEDIR/data/GMODJOBS/$GMID";
 $ENSPROCS="$ENV{CSH_ARCHIVE}/ncl";
 $RUNDIR="$HOMEDIR/data/cycles/$GMID/$MEMBER/";
 $ARCDIR="$HOMEDIR/data/cycles/$GMID/archive/$MEMBER/"; #aux_$CYCLE
-$OBSDIR="$HOMEDIR/sishen/Radiance_Plot/Radiation/";
+$OBSDIR="$HOMEDIR/sishen/Radiance_Plot/Radiation_date_adjusted/";
 $WORKDIR="/dev/shm/ObsRadiancePlot/$GMID/$MEMBER";
 $SCRIPT_DIR="$HOMEDIR/sishen/Radiance_Plot/";
 $TEMPDIR="$SCRIPT_DIR/temp_aux/$CYCLE"; #save aux.nc file
-$PLOTDIR="$SCRIPT_DIR/output_png/$CYCLE";
+$PLOTDIR="$SCRIPT_DIR/output_png_date_adjusted/$CYCLE";
 system("test -d $PLOTDIR || mkdir -p $PLOTDIR");
 require "$ENSPROCS/common_tools.pl";
 
 for ($hr=$start_hour; $hr <=$end_hour; $hr=$hr+$incre_hour) {
     $d=&tool_date12_add("${CYCLE}00", $hr, "hour");
     print("to process $d -----\n");
-    $bjd=&tool_date12_add($d, 8, "hour");
+    #$bjd=&tool_date12_add($d, 8, "hour");
+    $bjd=$d;
     $mywork="$WORKDIR/$CYCLE/$d/";
     system("test -d $mywork || mkdir -p $mywork");
     chdir($mywork);
     #cp aux
+    $file_name2_nc3=&tool_date12_to_outfilename("auxhist3_d0${dom}_", "${d}00", ".nc");
     $file_temp_save="$TEMPDIR/$file_name2_nc3";
     $file_name1=&tool_date12_to_outfilename("auxhist3_d0${dom}_", "${d}00", "");
     $file_path1="$RUNDIR/$CYCLE/WRF_P/$file_name1";
@@ -40,12 +42,12 @@ for ($hr=$start_hour; $hr <=$end_hour; $hr=$hr+$incre_hour) {
             system("cp -r $file_name2_nc3 $TEMPDIR/");
         }
     }elsif (-e $file_temp_save) { 
+        print("cp -r $file_temp_save $mywork/");
         system("cp -r $file_temp_save $mywork/");
     }elsif (-e $file_path1) {
         system("cp -r $file_path1 $mywork/$file_name2_nc3");
     }elsif (-e $file_path2) {
         system("cp $file_path2 $mywork/");
-        $file_name2_nc3=&tool_date12_to_outfilename("auxhist3_d0${dom}_", "${d}00", ".nc");
         $file_name2_unpack=&tool_date12_to_outfilename("auxhist3_d0${dom}_", "${d}", ".nc4");
         print("doing ncpdq unpacking..\n");
         system("ncpdq -O -U $file_name2 $file_name2_unpack && rm -rf $file_name2");

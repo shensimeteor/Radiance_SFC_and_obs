@@ -409,6 +409,8 @@ wcStrt     = systemfunc("date")
   ;----------------------------------------------------------------------------- 
       ;vars=(/"SWNORM","SWDOWN","SWDDIF"/)
       ;var_titles=(/"Normal Shortwave at Surface","Downward Shortwave at Surface", "Downward Diffse Shortwave at surface"/)
+      ;vars=(/"SWNORM"/)
+      ;var_titles=(/"Normal Shortwave at Surface"/)
       vars=(/"SWDOWN"/)
       var_titles=(/"Downward Shortwave at Surface"/)
       nvar=dimsizes(vars)

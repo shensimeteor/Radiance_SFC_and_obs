@@ -1,4 +1,4 @@
-Radiation/
-output_png/
+Radiation*/
+output_png*
 temp_aux/
-
+*.tgz
