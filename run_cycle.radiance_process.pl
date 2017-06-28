@@ -39,7 +39,7 @@ for ($hr=$start_hour; $hr <=$end_hour; $hr=$hr+$incre_hour) {
     $file_temp_save="$TEMPDIR/$file_name2_nc3";
     if( -e $file_name2_nc3) {
         print "file exists in /dev/shm\n";
-        if( !-e $file_temp_save) { 
+        if( !-e $file_temp_save && $do_save ) { 
             system("cp -r $file_name2_nc3 $TEMPDIR/");
         }
     }elsif (-e $file_temp_save) { 
@@ -67,7 +67,10 @@ for ($hr=$start_hour; $hr <=$end_hour; $hr=$hr+$incre_hour) {
             print("doing ncpdq unpacking..\n");
             system("ncpdq -O -U $file_name2 $file_name2_unpack && rm -rf $file_name2");
             print("doing nc4 to nc3..\n");
-            system("ncks -O -3 $file_name2_unpack $file_name2_nc3");i
+            system("ncks -O -3 $file_name2_unpack $file_name2_nc3");
+            if( $do_save) {
+                system("cp $file_name2_nc3 $TEMPDIR/");
+            }
         }else {
             print("WARN: aux file not found , next \n");
             next;
