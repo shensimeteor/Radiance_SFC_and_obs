@@ -13,7 +13,6 @@ begin
     total_radiance@elevs=new((/npt/), "float")
     total_radiance@stnids=new((/npt/), "string")
     total_radiance@_FillValue=999999
-    print(icol_to_read)
     do ipt=0, npt-1
         items=str_split(strs(ipt+2), " ")
         total_radiance(ipt) = tofloat(items(icol_to_read))

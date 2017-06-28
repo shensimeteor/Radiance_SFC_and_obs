@@ -1,0 +1,5 @@
+for date adjustment for radiation obs file:
+1. cat obs file together (obs.all)
+2. remove all the title lines 
+3. ./date_adjust_toutc.sh obs.all
+4. the results is in output/

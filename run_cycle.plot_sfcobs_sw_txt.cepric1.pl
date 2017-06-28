@@ -1,24 +1,27 @@
 #!/usr/bin/perl
 
-$GMID="GECN3KM";
-$MEMBER="GFS_WCTRL";
-$CYCLE="2017050100";
+$GMID="GECHRAR";
+$MEMBER="GNL_WCTRL";
+$CYCLE="2017061213"; #actually month
 $start_hour=0;
-$end_hour=72;
+$end_hour=170;
 $incre_hour=1;
 $dom=2;
 
-$HOMEDIR=$ENV{HOME};
-$GMODDIR="$HOMEDIR/data/GMODJOBS/$GMID";
-$ENSPROCS="$ENV{CSH_ARCHIVE}/ncl";
-$RUNDIR="$HOMEDIR/data/cycles/$GMID/$MEMBER/";
-$ARCDIR="$HOMEDIR/data/cycles/$GMID/archive/$MEMBER/"; #aux_$CYCLE
-$OBSDIR="$HOMEDIR/sishen/Radiance_Plot/Radiation_date_adjusted/";
+$do_plot_sfc_obs=0;
+$do_error_output=1;
+
+$HOMEDIR="/data1/fdda-ops/";
+#$GMODDIR="$HOMEDIR/data/GMODJOBS/$GMID";
+$ENSPROCS="$HOMEDIR/fddahome/cycle_code/CSH_ARCHIVE/ncl";
+$RUNDIR="$HOMEDIR/data/cycles/$GMID/reanl/$MEMBER/2017/201706";
+$ARCDIR="$HOMEDIR/data/cycles/$GMID/archive/$MEMBER/"; #aux_$CYCLE #no need
+$OBSDIR="$HOMEDIR/sishen/Plot_Radiation_SfcObs/Radiation_OBS_timeadjust/output/";
 $WORKDIR="/dev/shm/ObsRadiancePlot/$GMID/$MEMBER";
-$SCRIPT_DIR="$HOMEDIR/sishen/Radiance_Plot/";
-$TEMPDIR="$SCRIPT_DIR/temp_aux/$CYCLE"; #save aux.nc file
-$PLOTDIR="$SCRIPT_DIR/output_png_date_adjusted/$CYCLE";
-system("test -d $PLOTDIR || mkdir -p $PLOTDIR");
+$SCRIPT_DIR="$HOMEDIR/sishen/Plot_Radiation_SfcObs/Radiance_SFC_and_obs/";
+$TEMPDIR="$SCRIPT_DIR/temp_aux/$CYCLE"; #save aux.nc file, only for archived files
+$PLOTDIR="$SCRIPT_DIR/output_png/$GMID/";
+$STATDIR="$SCRIPT_DIR/output_stats/$GMID/";
 require "$ENSPROCS/common_tools.pl";
 
 for ($hr=$start_hour; $hr <=$end_hour; $hr=$hr+$incre_hour) {
@@ -33,7 +36,7 @@ for ($hr=$start_hour; $hr <=$end_hour; $hr=$hr+$incre_hour) {
     $file_name2_nc3=&tool_date12_to_outfilename("auxhist3_d0${dom}_", "${d}00", ".nc");
     $file_temp_save="$TEMPDIR/$file_name2_nc3";
     $file_name1=&tool_date12_to_outfilename("auxhist3_d0${dom}_", "${d}00", "");
-    $file_path1="$RUNDIR/$CYCLE/WRF_P/$file_name1";
+    $file_path1="$RUNDIR/$file_name1";
     $file_name2=&tool_date12_to_outfilename("auxhist3_d0${dom}_", "${d}", ".nc4.p");
     $file_path2="$ARCDIR/aux3_$CYCLE/$file_name2";
     if( -e $file_name2_nc3) {
@@ -71,12 +74,22 @@ for ($hr=$start_hour; $hr <=$end_hour; $hr=$hr+$incre_hour) {
     #ln ncl
     symlink("$SCRIPT_DIR/plot_SFC_and_obs_SW_txt.ncl", "plot_SFC_and_obs_SW_txt.ncl");
     symlink("$SCRIPT_DIR/read_obs_radiance_txt.ncl", "read_obs_radiance_txt.ncl");
+    symlink("$SCRIPT_DIR/calc_Radiance_Wrf_Error.ncl", "calc_Radiance_Wrf_Error.ncl");
     #run ncl
-    $cmd=qq(ncl 'file_in="$file_name2_nc3"' 'obs_txt_file="$obs_file"' plot_SFC_and_obs_SW_txt.ncl > log.ncl);
-    print($cmd."\n");
-    system($cmd);
-    #cpout png & rm workdir
-    system("cp 20*/*png $PLOTDIR/${d}_d2_swdown.png");
+    if($do_plot_sfc_obs) {
+        $cmd=qq(ncl 'file_in="$file_name2_nc3"' 'obs_txt_file="$obs_file"' plot_SFC_and_obs_SW_txt.ncl > log.plot);
+        print($cmd."\n");
+        system($cmd);
+        system("test -d $PLOTDIR || mkdir -p $PLOTDIR");
+        system("cp 20*/*png $PLOTDIR/${d}_d2_swdown.png");
+    }
+    if($do_error_output) { 
+        $cmd=qq(ncl 'file_in="$file_name2_nc3"' 'obs_txt_file="$obs_file"' calc_Radiance_Wrf_Error.ncl > log.calc);
+        print($cmd."\n");
+        system($cmd);
+        system("test -d $STATDIR || mkdir -p $STATDIR");
+        system("cp output.txt $STATDIR/${d}_d2_swdown.txt");
+    }
     chdir("$WORKDIR/$CYCLE");
     system("rm -rf $mywork");
 }
