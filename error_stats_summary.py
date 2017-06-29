@@ -49,7 +49,7 @@ for ifile in range(nfile):
 #write out
 with open(output_stats,"w") as f:
     f.write("stnid, lons, lats, ns, bias, rmse, rmse_dbias, mae, corr \n")
-    for sid in dct_error.keys():
+    for sid in sorted(dct_error.keys()):
         array_error=np.array(dct_error[sid])
         ns=len(array_error)
         bias=np.mean(array_error)
