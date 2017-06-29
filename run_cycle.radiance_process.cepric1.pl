@@ -32,7 +32,7 @@ while ( 1 ) {
         last;
     }
     print "\n START CYCLE: $CYCLE -------------------- \n";
-    $TEMPDIR="$OUT_DIR/temp_aux/$CYCLE"; #save aux.nc file
+    $TEMPDIR="$OUT_DIR/temp_aux/$GMID/$MEMBER/$CYCLE"
     $PLOTDIR="$OUT_DIR/output_png/$CYCLE";
     $ERRORDIR = "$OUT_DIR/output_error/$CYCLE";
     $MATCHDIR= "$OUT_DIR/output_match/$CYCLE";
